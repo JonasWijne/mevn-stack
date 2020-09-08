@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  frontend:
+    build: frontend
+    container_name: frontend
+    restart: unless-stopped
+    expose:
+      - "4000"
+    environment:
+      NODE_ENV: dev
+
+  api:
+    build: api
+    container_name: api
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      MONGO_DB_USERNAME: admin
+      MONGO_DB_HOST: database
+      MONGO_DB_PORT: 27017
+      MONGO_DB_PASSWORD:
+    links:
+      - database
+
+  database:
+    image: mongo:latest
+    container_name: database
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_DB_PASSWORD}"
+      MONGO_INITDB_DATABASE: database
+    volumes:
+      - ./database/db:/data/db
+    ports:
+      - "27017:27017"
+
+  loadbalancer:
+    build: loadbalancer
+    container_name: loadbalancer
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    links:
+      - api
+      - frontend

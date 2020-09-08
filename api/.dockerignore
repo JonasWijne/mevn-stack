@@ -1,0 +1,8 @@
+.git
+*.md
+.gitignore
+.dockerignore
+.idea
+node_modules
+/yarn-error.log
+/dist/
